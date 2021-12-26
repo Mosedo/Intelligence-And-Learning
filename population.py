@@ -61,6 +61,9 @@ def generatePopulation(s):
         population.append([randomCharStart() for i in range(len(s))])
     return population
 
+def generateASentence(s):
+    return [randomChar() for r in range(s)]
+
 def calculateFitness(chromosome,actual):
     fitness=0
     for index,value in enumerate(actual):
