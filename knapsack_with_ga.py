@@ -5,7 +5,7 @@ import numpy as np
 bag=[15,2,1,9,6,11,4,8,7,3]
 
 target_weight=15
-population_size=10
+population_size=1000
 
 population=[]
 fitnesses=[]
@@ -39,7 +39,6 @@ def mutation(chromosome):
     new_chromosome=chromosome.copy()
     idx=random.randint(0,len(bag)-1)
     new_chromosome[idx]=random.randint(0,1)
-    #print(f"Chromosome is {chromosome} new one is {new_chromosome}")
     return new_chromosome
 
     
@@ -73,7 +72,7 @@ for gen in range(10000):
             mutation(s)
         )
     
-    #print(newGen)
+    
 
     
     population=newGen
