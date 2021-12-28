@@ -43,6 +43,23 @@ for i in range(100):
             }
         )
 
+for o in range(100):
+    cords2=(random.randint(400,500),random.randint(10,HEIGHT))
+    if cords2[0] < WIDTH/2:
+        training_data.append(
+            {
+                "input":[cords2[0]/WIDTH],
+                "target":[0]
+            }
+        )
+    else:
+        training_data.append(
+            {
+                "input":[cords2[0]/WIDTH],
+                "target":[1]
+            }
+        )
+
 def fitnessFunction(brain):
     for data in training_data:
         guess=brain.feedFoward(data["input"])
@@ -100,8 +117,8 @@ for gen in range(10000):
 
     for n in range(100):
         chosen=random.choice(parents)
-        chosen.weights_ih*np.random.uniform(0.1,0.99)
-        chosen.weights_ho*np.random.uniform(0.1,0.99)
+        chosen.weights_ih*np.random.uniform(0.99,2.01)
+        chosen.weights_ho*np.random.uniform(0.99,2.01)
         nextGen.append(
             chosen
         )
@@ -109,4 +126,5 @@ for gen in range(10000):
     population=nextGen
 
     print(f"======== GEN {gen} =========")
-    print(f"{rankedBrains[0]} --- {rankedBrains[0][1].weights_ih} --- {rankedBrains[0][1].weights_ho}")
+    #print(f"{rankedBrains[0]} --- {rankedBrains[0][1].weights_ih} --- {rankedBrains[0][1].weights_ho}")
+    print(f"{rankedBrains[0]}")

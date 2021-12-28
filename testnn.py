@@ -2,13 +2,11 @@ import numpy as np
 import math
 import random
 
-weights_ihidd=np.array([[ 0.22879112],
-                        [ 1.83236638],
-                        [ 0.26723785],
-                        [ 0.03798854],
-                        [-1.0188697 ]])
+weights_ihidd=np.array([[ 0.27641065, -0.12879777],
+                        [ 0.11672074,  1.18172682]])
 
-weights_hout=np.array([[ 0.26961465,  0.77256597, -0.11073264, -1.2405121,   0.2969469 ]])
+weights_hout=np.array([[ 0.35780877, -0.09109436],
+                        [ 1.01166643, -0.54294083]])
 class Brain:
     def __init__(self,input_nodes,hidden_nodes,output_nodes):
         self.input_nodes=input_nodes
