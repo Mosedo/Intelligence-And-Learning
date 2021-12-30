@@ -3,6 +3,7 @@ import numpy as np
 import math
 import random
 import sys
+import bird_brain as brain
 
 pygame.init()
 
@@ -12,29 +13,45 @@ HEIGHT=600
 accelerate_by=0.001
 jumping=False
 pipe_gap=120
-pipe_velocity=0.5
+pipe_velocity=0.4
 pipes=[]
+birds=[]
+deadbirds=[]
 win=pygame.display.set_mode((WIDTH,HEIGHT))
 
 class Bird:
-    def __init__(self):
-        self.x=200
+    def __init__(self,index):
+        self.x=100
         self.y=HEIGHT/2
         self.velocity=0.1
-        self.acceleration=0.001
+        self.acceleration=random.uniform(0.001,0.0015)
         self.fitness=0
         self.size=15
         self.lift=-0.4
         self.alive=True
         self.betweenPipes=False
+        self.index=index
+        self.brain=brain.Brain(4,2,1)
     def drawBird(self):
         pygame.draw.circle(win, (255,255,255), (self.x,self.y), self.size)
         self.insidePipes()
+        inputs=[self.x/WIDTH,self.y/HEIGHT,pipes[0].height/HEIGHT,pipes[0].height+pipe_gap/HEIGHT]
+        toJump=self.brain.feedFoward(inputs)[0][0][0]
+        if toJump >= 0.5:
+            self.jump()
+    
     
     def applyGravity(self):
 
         if self.y > HEIGHT-self.size:
             self.velocity=0
+            temp_idx=self.index
+            del birds[self.index]
+            reorganizeList(temp_idx)
+        elif self.y <= 0:
+            temp_idx=self.index
+            del birds[self.index]
+            reorganizeList(temp_idx)
         else:
             acceleration_due_to_gravity=self.acceleration
             self.velocity+=acceleration_due_to_gravity
@@ -50,6 +67,7 @@ class Bird:
            
     def jump(self):
         self.velocity+=self.lift
+            
     
     def insidePipes(self):
         if len(pipes) > 1:
@@ -60,6 +78,11 @@ class Bird:
             else:
                 self.betweenPipes=False
 
+def createBirds():
+    for b in range(10):
+        birds.append(Bird(b))
+
+createBirds()
 
 class Pipe:
     def __init__(self,y,height):
@@ -74,7 +97,6 @@ class Pipe:
         if self.x <= 0:
             pipes.clear()
 
-bird=Bird()
 
 def addPipes():
     if len(pipes) > 0:
@@ -84,11 +106,19 @@ def addPipes():
         pipes.append(Pipe(HEIGHT-pipe_height,pipe_height))
     else:
         pipes.append(Pipe(0,random.randint(100,400)))
+
+
+def reorganizeList(index):
+    for bird in birds:
+        if bird.index > index:
+            bird.index-=1
+
     
 
 
 
 while True:
+
     if len(pipes) < 2:
         addPipes()
     for event in pygame.event.get():
@@ -96,11 +126,22 @@ while True:
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                bird.jump()
+                if len(birds) > 0:
+                    bird.jump()
     win.fill((0,0,0))
-    bird.drawBird()
-    bird.collition()
-    bird.applyGravity()
+    
+    for bird in birds:
+        if bird.alive:
+            bird.drawBird()
+            bird.collition()
+            bird.applyGravity()
+        else:
+            temp_index=bird.index
+            deadbirds.append(bird)
+            del birds[bird.index]
+            reorganizeList(temp_index)
+            if len(birds) == 0:
+                createBirds()
 
     for pipe in pipes:
         pipe.draw()
