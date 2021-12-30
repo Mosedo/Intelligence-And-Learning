@@ -61,6 +61,9 @@ class NeuralNetwork:
         self.wh += X.T.dot(d_hiddenlayer) *self.lr
         self.bh += np.sum(d_hiddenlayer, axis=0,keepdims=True) *self.lr
 
+
+        print((self.wh,self.wout,self.bh,self.bout))
+
         return E
 
     
@@ -99,8 +102,8 @@ nn=NeuralNetwork(2,1)
 # print(nn.train([0.8,0.6],[1]))
 
 for i in range(5000):
-    #random.shuffle(training_data)
-    print(nn.train(X,y))
+    #print(nn.train(X,y))
+    nn.train(X,y)
 
 print("***************************************")
 print(nn.feedFoward([1,0]))

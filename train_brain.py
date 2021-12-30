@@ -1,130 +1,85 @@
-import numpy as np
 import math
 import random
-import genetic_brain
-from numpy.random import randint
-from numpy.random import rand
+import numpy as np
+import genetic_brain as brain
 
-HEIGHT=600
-WIDTH=900
-
-training_data=[
-
-]
 
 population=[]
 
-def crossover(p1, p2, r_cross):
-    c1, c2 = p1.copy(), p2.copy()
-    if rand() < r_cross:
-        pt = randint(1, len(p1)-2)
-        c1 = p1[:pt] + p2[pt:]
-        c2 = p2[:pt] + p1[pt:]
-    return [c1,c2]
+for p in range(1000):
+    population.append(brain.Brain(2,2,1))
+
+def fitness(br):
+    inputs=[[0,1],[0,0],[1,0],[1,1]]
+    targets=[[1],[0],[1],[0]]
+    brain_fitness=0
+    errors=[]
+
+    for index,input in enumerate(inputs):
+        output=br.feedFoward(input)[0][0][0]
+        error=output-targets[index][0]
+        errors.append(error)
+    
+    mean_error=sum(errors)/len(errors)
+    if mean_error==0:
+        return 99999
+    else:
+        return abs(1/mean_error)
+    
+
+weights_ihidd=np.array([[2.37004549, 4.94034828],
+                        [2.38451919, 5.04085224]])
+
+weights_hout=np.array([[-5.34496779],
+                        [ 5.35608423]])
+
+bias_hidden=np.array([[-3.50020761, -1.62119614]])
+
+bias_out=np.array([[-2.40216604]])
+
+b=brain.Brain(2,2,1)
+b.wh=weights_ihidd
+b.wout=weights_hout
+b.bh=bias_hidden
+b.wout=bias_out
+
+print(fitness(b))
+
+# for gen in range(10000):
+#     rankedBrains=[]
+#     for bra in population:
+#         rankedBrains.append((fitness(bra),bra))
+#     sort_by=lambda ranked:ranked[0]
+#     rankedBrains.sort(key=sort_by,reverse=True)
+#     pool=rankedBrains[:400]
+
+
+#     elements=[]
+
+#     for element in pool:
+#         el=element[1]
+#         elements.append(el)
+    
+#     newGen=[]
+
+#     for n in range(1000):
+#         child_brain=brain.Brain(2,2,1)
+#         chosen=random.choice(elements)
+#         new_brain=chosen.mutate()
+#         child_brain.wh=new_brain[0]
+#         child_brain.wout=new_brain[1]
+#         child_brain.bh=new_brain[2]
+#         child_brain.bout=new_brain[3]
+#         newGen.append(child_brain)
         
 
-for p in range(100):
-    population.append(genetic_brain.Brain(1,5,1))
-
-for i in range(100):
-    cords=(random.randint(10,WIDTH),random.randint(10,HEIGHT))
-    if cords[0] < WIDTH/2:
-        training_data.append(
-            {
-                "input":[cords[0]/WIDTH],
-                "target":[0]
-            }
-        )
-    else:
-        training_data.append(
-            {
-                "input":[cords[0]/WIDTH],
-                "target":[1]
-            }
-        )
-
-for o in range(100):
-    cords2=(random.randint(400,500),random.randint(10,HEIGHT))
-    if cords2[0] < WIDTH/2:
-        training_data.append(
-            {
-                "input":[cords2[0]/WIDTH],
-                "target":[0]
-            }
-        )
-    else:
-        training_data.append(
-            {
-                "input":[cords2[0]/WIDTH],
-                "target":[1]
-            }
-        )
-
-def fitnessFunction(brain):
-    for data in training_data:
-        guess=brain.feedFoward(data["input"])
-        if (guess[0] >= 0.5 and data["target"][0] >= 0.5) or (guess[0] < 0.5 and data["target"][0] < 0.5):
-            brain.fitness+=1
-        elif (guess[0] >= 0.5 and data["target"][0] < 0.5) or (guess[0] < 0.5 and data["target"][0] >= 0.5):
-            brain.fitness-=1
-    return brain.fitness
-
-for gen in range(10000):
-
-
-    # rankedBrains=[]
-    # for brain in population:
-    #     rankedBrains.append((fitnessFunction(brain),(brain.weights_ih,brain.weights_ho)))
-    # sort_by=lambda ranked:ranked[0]
-    # rankedBrains.sort(key=sort_by,reverse=True)
-
-    # pool=rankedBrains[:100]
-
-    rankedBrains=[]
-    for brain in population:
-        rankedBrains.append((fitnessFunction(brain),brain))
-    sort_by=lambda ranked:ranked[0]
-    rankedBrains.sort(key=sort_by,reverse=True)
-
-    pool=rankedBrains[:100]
-
-    agen_one_weights_ih=pool[0][1].weights_ih
-    agen_one_weights_ho=pool[0][1].weights_ho
-
-    agen_two_weights_ih=pool[1][1].weights_ih
-    agen_two_weights_ho=pool[1][1].weights_ho
-
-
-    input_hidden_flattened=agen_one_weights_ih.flatten().tolist()
-    input_hidden_flattened2=agen_two_weights_ih.flatten().tolist()
-
-    input_output_flattened=agen_one_weights_ho.flatten().tolist()
-    input_output_flattened2=agen_two_weights_ho.flatten().tolist()
-
-    crossed_ih=crossover(input_hidden_flattened,input_hidden_flattened2,2)
-    crossed_ho=crossover(input_output_flattened,input_output_flattened2,2)
-
-    parent1=genetic_brain.Brain(1,5,1)
-    parent1.weights_ih=np.array(crossed_ih[0]).reshape(agen_one_weights_ih.shape)
-    parent1.weights_ho=np.array(crossed_ho[0]).reshape(agen_one_weights_ho.shape)
-    parent2=genetic_brain.Brain(1,5,1)
-    parent2.weights_ih=np.array(crossed_ih[1]).reshape(agen_two_weights_ih.shape)
-    parent2.weights_ho=np.array(crossed_ho[1]).reshape(agen_two_weights_ho.shape)
-
-    parents=[parent1,parent2]
-
-    nextGen=[]
-
-    for n in range(100):
-        chosen=random.choice(parents)
-        chosen.weights_ih*np.random.uniform(0.99,2.01)
-        chosen.weights_ho*np.random.uniform(0.99,2.01)
-        nextGen.append(
-            chosen
-        )
     
-    population=nextGen
+#     population=newGen
 
-    print(f"======== GEN {gen} =========")
-    #print(f"{rankedBrains[0]} --- {rankedBrains[0][1].weights_ih} --- {rankedBrains[0][1].weights_ho}")
-    print(f"{rankedBrains[0]}")
+
+
+#     print(f"======== GEN {gen} =========")
+#     print((rankedBrains[0],rankedBrains[0][1].wh,rankedBrains[0][1].wout,rankedBrains[0][1].bh,rankedBrains[0][1].bout))
+
+
+
