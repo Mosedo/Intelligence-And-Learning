@@ -28,7 +28,7 @@ bg=pygame.transform.scale(bg,(WIDTH,HEIGHT))
 
 class Bird:
     def __init__(self):
-        self.x=50
+        self.x=100
         self.y=HEIGHT/2
         self.velocity=0.05
         self.acceleration=0.001
@@ -42,6 +42,7 @@ class Bird:
         self.brain=brain.Brain(4,2,1)
         self.height = self.y
         self.tick_count=0
+        self.score=0
     def drawBird(self,win):
         # pygame.draw.circle(win, (255,255,255), (self.x,self.y), self.size)
         # self.insidePipes()
@@ -154,6 +155,7 @@ def addPipes():
 
 
 def eval_genomes(genomes, config):
+    global pipe_velocity
 
     pygame.init()
     win=pygame.display.set_mode((WIDTH,HEIGHT))
@@ -197,7 +199,7 @@ def eval_genomes(genomes, config):
                 #bird.drawLine(bird.x,bird.y,pipes[0].image.get_rect().bottom,pipes[0].image.get_rect().bottom,win)
                 bird.move()
                 if len(pipes) > 0:
-                    output = nets[idx].activate((bird.x+bird.size/2,bird.y-bird.size/2,pipes[0].height,pipes[0].height+pipe_gap,pipes[0].x,bird.velocity))
+                    output = nets[idx].activate((bird.x+bird.size/2,bird.y-bird.size/2,HEIGHT-bird.y,pipes[0].height,pipes[0].height+pipe_gap,pipes[0].x,bird.velocity,))
                     ge[idx].fitness += 0.1
                     if output[0] > 0.5:
                         bird.jump()
@@ -206,6 +208,7 @@ def eval_genomes(genomes, config):
                     ge[idx].fitness += 5
                 if bird.x-bird.size > pipes[0].x+pipes[0].width/2:
                     ge[idx].fitness += 10
+                    bird.score+=1
                 
             else:
                 birds.pop(idx)
