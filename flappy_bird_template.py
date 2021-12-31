@@ -16,6 +16,8 @@ pipe_velocity=0.5
 pipes=[]
 win=pygame.display.set_mode((WIDTH,HEIGHT))
 
+FTS=30
+
 class Bird:
     def __init__(self):
         self.x=200
@@ -27,6 +29,8 @@ class Bird:
         self.lift=-0.4
         self.alive=True
         self.betweenPipes=False
+        self.height = self.y
+        self.tick_count=0
     def drawBird(self):
         pygame.draw.circle(win, (255,255,255), (self.x,self.y), self.size)
         self.insidePipes()
@@ -49,7 +53,21 @@ class Bird:
                 self.alive=False
            
     def jump(self):
-        self.velocity+=self.lift
+        #self.velocity+=self.lift
+        self.velocity = -10.5
+        self.tick_count = 0
+        self.height = self.y
+    def move(self):
+        self.tick_count += 1
+
+        displacement = self.velocity*(self.tick_count) + 0.5*(3)*(self.tick_count)**2
+        if displacement >= 16:
+            displacement = (displacement/abs(displacement)) * 16
+
+        if displacement < 0:
+            displacement -= 2
+
+        self.y = self.y + displacement
     
     def insidePipes(self):
         if len(pipes) > 1:
@@ -86,9 +104,10 @@ def addPipes():
         pipes.append(Pipe(0,random.randint(100,400)))
     
 
-
+clock = pygame.time.Clock()
 
 while True:
+    clock.tick(30)
     if len(pipes) < 2:
         addPipes()
     for event in pygame.event.get():
@@ -100,7 +119,8 @@ while True:
     win.fill((0,0,0))
     bird.drawBird()
     bird.collition()
-    bird.applyGravity()
+    # bird.applyGravity()
+    bird.move()
 
     for pipe in pipes:
         pipe.draw()

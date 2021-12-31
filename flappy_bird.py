@@ -4,57 +4,59 @@ import math
 import random
 import sys
 import bird_brain as brain
+import os
+import neat
 
-pygame.init()
+
 
 WIDTH=900
 HEIGHT=600
 
 accelerate_by=0.001
 jumping=False
-pipe_gap=120
-pipe_velocity=0.4
+pipe_gap=200
+pipe_velocity=10
 pipes=[]
-birds=[]
-deadbirds=[]
-win=pygame.display.set_mode((WIDTH,HEIGHT))
+#birds=[]
+
 
 class Bird:
-    def __init__(self,index):
-        self.x=100
+    def __init__(self):
+        self.x=50
         self.y=HEIGHT/2
-        self.velocity=0.1
-        self.acceleration=random.uniform(0.001,0.0015)
+        self.velocity=0.05
+        self.acceleration=0.001
+        self.resistance=0.00001
         self.fitness=0
         self.size=15
         self.lift=-0.4
         self.alive=True
         self.betweenPipes=False
-        self.index=index
         self.brain=brain.Brain(4,2,1)
-    def drawBird(self):
+        self.height = self.y
+        self.tick_count=0
+    def drawBird(self,win):
         pygame.draw.circle(win, (255,255,255), (self.x,self.y), self.size)
         self.insidePipes()
-        inputs=[self.x/WIDTH,self.y/HEIGHT,pipes[0].height/HEIGHT,pipes[0].height+pipe_gap/HEIGHT]
-        toJump=self.brain.feedFoward(inputs)[0][0][0]
-        if toJump >= 0.5:
-            self.jump()
+
+        if self.x-self.size > pipes[0].x+pipes[0].width/2:
+            self.fitness+=10
+        
+        if self.betweenPipes:
+            self.fitness+=10
     
     
     def applyGravity(self):
 
         if self.y > HEIGHT-self.size:
             self.velocity=0
-            temp_idx=self.index
-            del birds[self.index]
-            reorganizeList(temp_idx)
+            self.alive=False
         elif self.y <= 0:
-            temp_idx=self.index
-            del birds[self.index]
-            reorganizeList(temp_idx)
+            self.alive=False
         else:
             acceleration_due_to_gravity=self.acceleration
             self.velocity+=acceleration_due_to_gravity
+            self.velocity+=self.resistance
             self.y+=self.velocity
         
     def collition(self):
@@ -66,7 +68,29 @@ class Bird:
                 self.alive=False
            
     def jump(self):
-        self.velocity+=self.lift
+        #self.velocity+=self.lift
+        self.velocity = -10.5
+        self.tick_count = 0
+        self.height = self.y
+    def move(self):
+
+
+        if self.y > HEIGHT-self.size:
+            self.velocity=0
+            self.alive=False
+        elif self.y <= 0:
+            self.alive=False
+
+        self.tick_count += 1
+
+        displacement = self.velocity*(self.tick_count) + 0.5*(3)*(self.tick_count)**2
+        if displacement >= 16:
+            displacement = (displacement/abs(displacement)) * 16
+
+        if displacement < 0:
+            displacement -= 2
+
+        self.y = self.y + displacement
             
     
     def insidePipes(self):
@@ -78,19 +102,14 @@ class Bird:
             else:
                 self.betweenPipes=False
 
-def createBirds():
-    for b in range(10):
-        birds.append(Bird(b))
-
-createBirds()
 
 class Pipe:
     def __init__(self,y,height):
         self.x=WIDTH-100
         self.y=y
         self.height=height
-        self.width=60
-    def draw(self):
+        self.width=50
+    def draw(self,win):
         pygame.draw.rect(win, (255,255,255), pygame.Rect(self.x, self.y, self.width, self.height))
     def move(self):
         self.x-=pipe_velocity
@@ -108,44 +127,100 @@ def addPipes():
         pipes.append(Pipe(0,random.randint(100,400)))
 
 
-def reorganizeList(index):
-    for bird in birds:
-        if bird.index > index:
-            bird.index-=1
+def eval_genomes(genomes, config):
 
+    pygame.init()
+    win=pygame.display.set_mode((WIDTH,HEIGHT))
+
+    nets=[]
+    birds=[]
+    ge = []
+
+    for genome_id, genome in genomes:
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        nets.append(net)
+        genome.fitness = 0
+        pipes.clear()
+        birds.append(Bird())
+        ge.append(genome)
+    run = True
+    clock = pygame.time.Clock()
+    while run and len(birds) > 0:
+        clock.tick(30)
     
+        if len(pipes) < 2:
+            addPipes()
+            for bird in birds:
+                bird.fitness+=1
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+                quit()
+                break
+        win.fill((0,0,0))
+        
+        for idx,bird in enumerate(birds):
+            if bird.alive:
+                bird.drawBird(win)
+                bird.collition()
+                # bird.applyGravity()
+                bird.move()
+                if len(pipes) > 0:
+                    output = nets[idx].activate((bird.x,bird.y,pipes[0].height,pipes[0].height+pipe_gap,pipes[0].x))
+                    ge[idx].fitness += 0.1
+                    if output[0] > 0.5:
+                        bird.jump()
+                
+                if bird.betweenPipes:
+                    ge[idx].fitness += 5
+                if bird.x-bird.size > pipes[0].x+pipes[0].width/2:
+                    ge[idx].fitness += 10
+                
+            else:
+                birds.pop(idx)
+                nets.pop(idx)
+                ge.pop(idx)
+
+        for pipe in pipes:
+            pipe.draw(win)
+            pipe.move()
+
+        pygame.display.flip()
 
 
+def run(config_file):
+    """
+    runs the NEAT algorithm to train a neural network to play flappy bird.
+    :param config_file: location of config file
+    :return: None
+    """
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                         neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                         config_file)
 
-while True:
+    # Create the population, which is the top-level object for a NEAT run.
+    p = neat.Population(config)
 
-    if len(pipes) < 2:
-        addPipes()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                if len(birds) > 0:
-                    bird.jump()
-    win.fill((0,0,0))
-    
-    for bird in birds:
-        if bird.alive:
-            bird.drawBird()
-            bird.collition()
-            bird.applyGravity()
-        else:
-            temp_index=bird.index
-            deadbirds.append(bird)
-            del birds[bird.index]
-            reorganizeList(temp_index)
-            if len(birds) == 0:
-                createBirds()
+    # Add a stdout reporter to show progress in the terminal.
+    p.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    p.add_reporter(stats)
+    #p.add_reporter(neat.Checkpointer(5))
 
-    for pipe in pipes:
-        pipe.draw()
-        pipe.move()
+    # Run for up to 50 generations.
+    winner = p.run(eval_genomes, 500)
 
-    pygame.display.flip()
-pygame.quit()
+    # show final stats
+    print('\nBest genome:\n{!s}'.format(winner))
+
+
+if __name__ == '__main__':
+    # Determine path to configuration file. This path manipulation is
+    # here so that the script will run successfully regardless of the
+    # current working directory.
+    local_dir = os.path.dirname(__file__)
+    config_path = os.path.join(local_dir, 'config-feedforward.txt')
+    run(config_path)
+
+
