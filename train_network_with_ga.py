@@ -67,16 +67,17 @@ for gen in range(10000):
     parent2_wh=parents[1].wh.flatten().tolist()
     parent2_wout=parents[1].wout.flatten().tolist()
 
+    #Do crossover of parents
     crossed_wh=crossover(parent1_wh,parent2_wh,1)
     crossed_wout=crossover(parent1_wout,parent2_wout,1)
 
-
+    #make new parents
     new_parent1_wh=np.array(crossed_wh[0]).reshape(parents[0].wh.shape)
     new_parent2_wh=np.array(crossed_wh[1]).reshape(parents[0].wh.shape)
-
     new_parent1_wout=np.array(crossed_wout[0]).reshape(parents[0].wout.shape)
     new_parent2_wout=np.array(crossed_wout[1]).reshape(parents[0].wout.shape)
 
+    #make new networks from the new parents with new weights and biasis
     parent1=brain.Brain(2,5,1)
     parent1.wh=new_parent1_wh
     parent1.wout=new_parent1_wout
@@ -92,7 +93,7 @@ for gen in range(10000):
 
 
 
-
+    #create new population
     newGen=[]
 
     for p in range(1000):
