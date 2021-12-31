@@ -14,10 +14,16 @@ HEIGHT=600
 
 accelerate_by=0.001
 jumping=False
-pipe_gap=200
+pipe_gap=150
 pipe_velocity=10
 pipes=[]
-#birds=[]
+
+bird_images=[pygame.transform.scale(pygame.image.load("./sprites/upflap.png"),(25,25)),pygame.transform.scale(pygame.image.load("./sprites/midflap.png"),(25,25)),pygame.transform.scale(pygame.image.load("./sprites/downflap.png"),(25,25))]
+flap=0
+
+pipe_image=pygame.image.load("./sprites/pipe.png")
+bg = pygame.image.load("./sprites/space.jpg")
+bg=pygame.transform.scale(bg,(WIDTH,HEIGHT))
 
 
 class Bird:
@@ -36,7 +42,18 @@ class Bird:
         self.height = self.y
         self.tick_count=0
     def drawBird(self,win):
-        pygame.draw.circle(win, (255,255,255), (self.x,self.y), self.size)
+        # pygame.draw.circle(win, (255,255,255), (self.x,self.y), self.size)
+        # self.insidePipes()
+
+        # global flap
+        # if flap >= len(bird_images):
+        #     flap=0
+        # else:
+        #     win.blit(bird_images[flap],(self.x,self.y))
+        #     self.insidePipes()
+        #     flap+=1
+
+        win.blit(bird_images[0],(self.x,self.y))
         self.insidePipes()
 
         if self.x-self.size > pipes[0].x+pipes[0].width/2:
@@ -102,6 +119,9 @@ class Bird:
             else:
                 self.betweenPipes=False
 
+def drawPipe(width,height):
+    p=pygame.transform.scale(pipe_image,(width,height))
+    return p
 
 class Pipe:
     def __init__(self,y,height):
@@ -110,7 +130,8 @@ class Pipe:
         self.height=height
         self.width=50
     def draw(self,win):
-        pygame.draw.rect(win, (255,255,255), pygame.Rect(self.x, self.y, self.width, self.height))
+        win.blit(drawPipe(self.width,self.height),(self.x, self.y))
+        #pygame.draw.rect(win, (255,255,255), pygame.Rect(self.x, self.y, self.width, self.height))
     def move(self):
         self.x-=pipe_velocity
         if self.x <= 0:
@@ -131,6 +152,7 @@ def eval_genomes(genomes, config):
 
     pygame.init()
     win=pygame.display.set_mode((WIDTH,HEIGHT))
+    pygame.display.set_caption("AI playing flappy bird")
 
     nets=[]
     birds=[]
@@ -159,6 +181,8 @@ def eval_genomes(genomes, config):
                 quit()
                 break
         win.fill((0,0,0))
+
+        win.blit(bg,(0,0))
         
         for idx,bird in enumerate(birds):
             if bird.alive:
@@ -167,7 +191,7 @@ def eval_genomes(genomes, config):
                 # bird.applyGravity()
                 bird.move()
                 if len(pipes) > 0:
-                    output = nets[idx].activate((bird.x,bird.y,pipes[0].height,pipes[0].height+pipe_gap,pipes[0].x))
+                    output = nets[idx].activate((bird.x,bird.y,pipes[0].height,pipes[0].height+pipe_gap,pipes[0].x,bird.velocity))
                     ge[idx].fitness += 0.1
                     if output[0] > 0.5:
                         bird.jump()
