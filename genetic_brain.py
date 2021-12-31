@@ -18,9 +18,14 @@ class Brain:
         self.output_nodes= output_nodes 
 
         # initializing weight and bias
-        self.wh=np.random.uniform(size=(self.input_nodes,self.hidden_nodes))
+        # self.wh=np.random.uniform(size=(self.input_nodes,self.hidden_nodes))
+        # self.bh=np.random.uniform(size=(1,self.hidden_nodes))
+        # self.wout=np.random.uniform(size=(self.hidden_nodes,self.output_nodes))
+        # self.bout=np.random.uniform(size=(1,self.output_nodes))
+
+        self.wh=np.array([np.random.uniform(-3,1) for i in range((self.input_nodes*self.hidden_nodes))]).reshape(self.input_nodes,self.hidden_nodes)
         self.bh=np.random.uniform(size=(1,self.hidden_nodes))
-        self.wout=np.random.uniform(size=(self.hidden_nodes,self.output_nodes))
+        self.wout=np.array([np.random.uniform(-3,1) for i in range((self.output_nodes*self.hidden_nodes))]).reshape(self.hidden_nodes,self.output_nodes)
         self.bout=np.random.uniform(size=(1,self.output_nodes))
 
     def feedFoward(self,inputs):
@@ -66,30 +71,5 @@ class Brain:
         self.wout+=mutation_value
         self.bh+=mutation_value
         self.bout+=mutation_value
-        return self.wh,self.wout,self.bh,self.bout
-        
-    
-    def train(self,input):
-
-        #Forward Propogation
-        hidden_layer_input1=np.dot(input,self.wh)
-        hidden_layer_input=hidden_layer_input1 + self.bh
-        hiddenlayer_activations = self.sigmoid(hidden_layer_input)
-        output_layer_input1=np.dot(hiddenlayer_activations,self.wout)
-        output_layer_input= output_layer_input1+ self.bout
-
-        output = self.sigmoid(output_layer_input)
-        #Backpropagation
-        E = y-output
-        slope_output_layer = self.derivatives_sigmoid(output)
-        slope_hidden_layer = self.derivatives_sigmoid(hiddenlayer_activations)
-        d_output = E * slope_output_layer
-        Error_at_hidden_layer = d_output.dot(self.wout.T)
-        d_hiddenlayer = Error_at_hidden_layer * slope_hidden_layer
-        self.wout += hiddenlayer_activations.T.dot(d_output) *self.lr
-        self.bout += np.sum(d_output, axis=0,keepdims=True) *self.lr
-        self.wh += X.T.dot(d_hiddenlayer) *self.lr
-        self.bh += np.sum(d_hiddenlayer, axis=0,keepdims=True) *self.lr
-
         return self.wh,self.wout,self.bh,self.bout
 
