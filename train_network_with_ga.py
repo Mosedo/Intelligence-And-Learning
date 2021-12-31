@@ -33,7 +33,7 @@ def mutation(rate,chromosome):
     new_chromosome=chromosome.copy()
     for idx,letter in enumerate(chromosome):
         if np.random.uniform(0,1) < rate:
-            new_chromosome[idx]=random.uniform(-6,1)
+            new_chromosome[idx]=random.uniform(-7,1)
     return new_chromosome
 
 def crossover(p1, p2, r_cross):
@@ -53,11 +53,11 @@ for gen in range(10000):
 
     pool=rankedGenomes[:100]
 
-    if rankedGenomes[0][0] > 10:
+    if rankedGenomes[0][0] > 14:
         print(f"Solution for [1,0] {rankedGenomes[0][1].feedFoward([1,0])}")
-        print(f"Solution for [1,0] {rankedGenomes[0][1].feedFoward([0,1])}")
-        print(f"Solution for [1,0] {rankedGenomes[0][1].feedFoward([1,1])}")
-        print(f"Solution for [1,0] {rankedGenomes[0][1].feedFoward([0,0])}")
+        print(f"Solution for [0,1] {rankedGenomes[0][1].feedFoward([0,1])}")
+        print(f"Solution for [1,1] {rankedGenomes[0][1].feedFoward([1,1])}")
+        print(f"Solution for [0,0] {rankedGenomes[0][1].feedFoward([0,0])}")
         break
 
     parents=[pool[0][1],pool[random.randint(1,len(pool)-1)][1]]
