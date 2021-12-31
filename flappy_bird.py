@@ -14,8 +14,8 @@ HEIGHT=600
 
 accelerate_by=0.001
 jumping=False
-pipe_gap=150
-pipe_velocity=10
+pipe_gap=180
+pipe_velocity=20
 pipes=[]
 
 bird_images=[pygame.transform.scale(pygame.image.load("./sprites/upflap.png"),(25,25)),pygame.transform.scale(pygame.image.load("./sprites/midflap.png"),(25,25)),pygame.transform.scale(pygame.image.load("./sprites/downflap.png"),(25,25))]
@@ -34,8 +34,9 @@ class Bird:
         self.acceleration=0.001
         self.resistance=0.00001
         self.fitness=0
-        self.size=15
+        self.size=25
         self.lift=-0.4
+        self.image=pygame.transform.scale(pygame.image.load("./sprites/midflap.png"),(25,25))
         self.alive=True
         self.betweenPipes=False
         self.brain=brain.Brain(4,2,1)
@@ -53,7 +54,7 @@ class Bird:
         #     self.insidePipes()
         #     flap+=1
 
-        win.blit(bird_images[0],(self.x,self.y))
+        win.blit(self.image,(self.x,self.y))
         self.insidePipes()
 
         if self.x-self.size > pipes[0].x+pipes[0].width/2:
@@ -108,6 +109,9 @@ class Bird:
             displacement -= 2
 
         self.y = self.y + displacement
+    
+    def drawLine(self,x1,y1,x2,y2,win):
+        pygame.draw.line(win, (255,255,255), (x1, y1), (x2, y2),1)
             
     
     def insidePipes(self):
@@ -119,8 +123,8 @@ class Bird:
             else:
                 self.betweenPipes=False
 
-def drawPipe(width,height):
-    p=pygame.transform.scale(pipe_image,(width,height))
+def drawPipe(image,width,height):
+    p=pygame.transform.scale(image,(width,height))
     return p
 
 class Pipe:
@@ -129,8 +133,9 @@ class Pipe:
         self.y=y
         self.height=height
         self.width=50
+        self.image=pipe_image
     def draw(self,win):
-        win.blit(drawPipe(self.width,self.height),(self.x, self.y))
+        win.blit(drawPipe(self.image,self.width,self.height),(self.x, self.y))
         #pygame.draw.rect(win, (255,255,255), pygame.Rect(self.x, self.y, self.width, self.height))
     def move(self):
         self.x-=pipe_velocity
@@ -189,9 +194,10 @@ def eval_genomes(genomes, config):
                 bird.drawBird(win)
                 bird.collition()
                 # bird.applyGravity()
+                #bird.drawLine(bird.x,bird.y,pipes[0].image.get_rect().bottom,pipes[0].image.get_rect().bottom,win)
                 bird.move()
                 if len(pipes) > 0:
-                    output = nets[idx].activate((bird.x,bird.y,pipes[0].height,pipes[0].height+pipe_gap,pipes[0].x,bird.velocity))
+                    output = nets[idx].activate((bird.x+bird.size/2,bird.y-bird.size/2,pipes[0].height,pipes[0].height+pipe_gap,pipes[0].x,bird.velocity))
                     ge[idx].fitness += 0.1
                     if output[0] > 0.5:
                         bird.jump()
@@ -233,7 +239,7 @@ def run(config_file):
     #p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 50 generations.
-    winner = p.run(eval_genomes, 500)
+    winner = p.run(eval_genomes, 50)
 
     # show final stats
     print('\nBest genome:\n{!s}'.format(winner))
