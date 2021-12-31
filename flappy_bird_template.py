@@ -16,6 +16,8 @@ pipe_velocity=0.5
 pipes=[]
 win=pygame.display.set_mode((WIDTH,HEIGHT))
 
+bird_images=[pygame.transform.scale(pygame.image.load("./sprites/upflap.png"),(25,25)),pygame.transform.scale(pygame.image.load("./sprites/midflap.png"),(25,25)),pygame.transform.scale(pygame.image.load("./sprites/downflap.png"),(25,25))]
+flap=0
 FTS=30
 
 class Bird:
@@ -32,8 +34,14 @@ class Bird:
         self.height = self.y
         self.tick_count=0
     def drawBird(self):
-        pygame.draw.circle(win, (255,255,255), (self.x,self.y), self.size)
-        self.insidePipes()
+        global flap
+        #pygame.draw.circle(win, (255,255,255), (self.x,self.y), self.size)
+        if flap >= len(bird_images):
+            flap=0
+        else:
+            win.blit(bird_images[flap],(self.x,self.y))
+            self.insidePipes()
+            flap+=1
     
     def applyGravity(self):
 
