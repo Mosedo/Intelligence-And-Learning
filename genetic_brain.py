@@ -30,9 +30,10 @@ class Brain:
         output_layer_input1=np.dot(hiddenlayer_activations,self.wout)
         output_layer_input= output_layer_input1+ self.bout
 
-        output = self.sigmoid(output_layer_input)
+        #output = self.sigmoid(output_layer_input)
 
-        # return {"output":output,"hidden_activation":hiddenlayer_activations}
+        output=np.tanh(output_layer_input)
+
         return output
     
     def sigmoid(self,x):
