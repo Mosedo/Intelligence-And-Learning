@@ -10,7 +10,7 @@ import neat
 
 
 WIDTH=900
-HEIGHT=600
+HEIGHT=550
 
 accelerate_by=0.001
 jumping=False
@@ -59,7 +59,7 @@ class Bird:
         self.insidePipes()
 
         if self.x-self.size/2 > pipes[0].x+pipes[0].width/2:
-            print("Rewared")
+            #print("Rewared")
             self.fitness+=10
         
         if self.betweenPipes:
@@ -126,7 +126,7 @@ class Bird:
                 self.betweenPipes=False
 
 def drawPipe(image,width,height):
-    p=pygame.transform.scale(image,(width,height))
+    p=pygame.transform.scale(image,(abs(width),abs(height)))
     return p
 
 class Pipe:

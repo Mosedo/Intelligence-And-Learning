@@ -3,7 +3,7 @@ import numpy as np
 import math
 from numpy.random import randint
 from numpy.random import rand
-import genetic_brain as brain
+import mybrain as brain
 
 population_size=1000
 mutation_rate=0.1
@@ -20,7 +20,7 @@ for p in range(population_size):
 def fitnessFunction(genome):
     errors=[]
     for index,input in enumerate(inputs):
-        guess=genome.feedFoward(input)[0][0][0]
+        guess=genome.feedFoward(input)[0]
         error=abs(guess-outputs[index])
         errors.append(error[0])
     mean_error=sum(errors)/len(errors)
@@ -65,7 +65,7 @@ for gen in range(10000):
 
     pool=rankedGenomes[:100]
 
-    if rankedGenomes[0][0] > 20:
+    if rankedGenomes[0][0] > 150:
         print(f"Solution for [1,0] {rankedGenomes[0][1].feedFoward([1,0])}")
         print(f"Solution for [0,1] {rankedGenomes[0][1].feedFoward([0,1])}")
         print(f"Solution for [1,1] {rankedGenomes[0][1].feedFoward([1,1])}")

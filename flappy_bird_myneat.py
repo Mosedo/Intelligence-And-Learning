@@ -3,19 +3,19 @@ import numpy as np
 import math
 import random
 import sys
-import genetic_brain as brain
+import mybrain as brain
 from numpy.random import randint
 from numpy.random import rand
 
 pygame.init()
 
 WIDTH=900
-HEIGHT=500
+HEIGHT=600
 
 accelerate_by=0.001
 jumping=False
-pipe_gap=250
-pipe_velocity=15
+pipe_gap=150
+pipe_velocity=40
 pipes=[]
 win=pygame.display.set_mode((WIDTH,HEIGHT))
 
@@ -27,7 +27,7 @@ birds=[]
 savedBirds=[]
 
 mutation_rate=0.1
-crossover_rate=0.9
+crossover_rate=0.1
 
 class Bird:
     def __init__(self):
@@ -41,7 +41,7 @@ class Bird:
         self.alive=True
         self.betweenPipes=False
         self.height = self.y
-        self.brain=brain.Brain(4,4,1)
+        self.brain=brain.Brain(5,4,1)
         self.tick_count=0
     def drawBird(self):
         #global flap
@@ -126,7 +126,7 @@ class Pipe:
         if self.x <= 0:
             pipes.clear()
 
-for b in range(200):
+for b in range(300):
     birds.append(Bird())
 
 def addPipes():
@@ -147,23 +147,23 @@ def mutation(rate,chromosome):
 
 def crossover(p1, p2, r_cross):
 
-    # for c in range(2):
-    #     if random.uniform(0,1) > crossover_rate:
-    #         c1, c2 = p1.copy(), p2.copy()
-    #         if rand() < r_cross:
-    #             pt = randint(1, len(p1)-2)
-    #             c1 = p1[:pt] + p2[pt:]
-    #             c2 = p2[:pt] + p1[pt:]
-    #         return [c1, c2]
-    #     else:
-    #         return [p1,p2]
+    for c in range(2):
+        if random.uniform(0,1) > crossover_rate:
+            c1, c2 = p1.copy(), p2.copy()
+            if rand() < r_cross:
+                pt = randint(1, len(p1)-2)
+                c1 = p1[:pt] + p2[pt:]
+                c2 = p2[:pt] + p1[pt:]
+            return [c1, c2]
+        else:
+            return [p1,p2]
 
-    c1, c2 = p1.copy(), p2.copy()
-    if rand() < r_cross:
-        pt = randint(1, len(p1)-2)
-        c1 = p1[:pt] + p2[pt:]
-        c2 = p2[:pt] + p1[pt:]
-    return [c1, c2]
+    # c1, c2 = p1.copy(), p2.copy()
+    # if rand() < r_cross:
+    #     pt = randint(1, len(p1)-2)
+    #     c1 = p1[:pt] + p2[pt:]
+    #     c2 = p2[:pt] + p1[pt:]
+    # return [c1, c2]
 
 def neuroEvolution():
     global birds
@@ -194,14 +194,14 @@ def neuroEvolution():
     new_parent2_wout=np.array(crossed_wout[1]).reshape(parents[0].wout.shape)
 
     #make new networks from the new parents with new weights and biasis
-    parent1=brain.Brain(4,4,1)
+    parent1=brain.Brain(5,4,1)
     parent1.wh=new_parent1_wh
     parent1.wout=new_parent1_wout
     parent1.bh=np.array(mutation(mutation_rate,parents[0].bh.flatten().tolist())).reshape(savedBirds[0].brain.bh.shape)
 
     parent1.bout=np.array(mutation(mutation_rate,parents[0].bout.flatten().tolist())).reshape(savedBirds[0].brain.bout.shape)
 
-    parent2=brain.Brain(4,4,1)
+    parent2=brain.Brain(5,4,1)
     parent2.wh=new_parent2_wh
     parent2.wout=new_parent2_wout
     parent2.bh=np.array(mutation(mutation_rate,parents[1].bh.flatten().tolist())).reshape(savedBirds[0].brain.bh.shape)
@@ -210,8 +210,8 @@ def neuroEvolution():
     #create new population
     newGen=[]
 
-    for p in range(200):
-        if p < 100:
+    for p in range(300):
+        if p < 150:
             new_brain=brain.Brain(4,4,1)
             new_brain.wh=np.array(mutation(mutation_rate,parent1.wh.flatten().tolist())).reshape(savedBirds[0].brain.wh.shape)
             new_brain.wout=np.array(mutation(mutation_rate,parent1.wout.flatten().tolist())).reshape(savedBirds[0].brain.wout.shape)
@@ -249,9 +249,9 @@ while True:
             bird.collition()
             bird.move()
             bird.fitness+=3
-            brain_input=[bird.velocity,bird.y/HEIGHT,pipes[0].height+pipe_gap/2,pipes[0].x]
+            brain_input=[bird.velocity,bird.y/HEIGHT,pipes[0].height+pipe_gap/2,pipes[0].x,pipes[0].x-50]
             brain_output=bird.brain.feedFoward(brain_input)
-            if  brain_output[0][0][0] > 0.5:
+            if  brain_output[0] > 0.5:
                 bird.jump()
 
         else:

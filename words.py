@@ -8,7 +8,7 @@ from numpy.random import rand
 population_size=1000
 mutation_rate=0.01
 
-problem="My name is Ibrahim"
+problem="My name is Ibrahim Its a holiday."
 
 problem=convertToList(problem)
 
@@ -38,7 +38,7 @@ def crossover(p1, p2, r_cross):
         c2 = p2[:pt] + p1[pt:]
     return [c1, c2]
 
-
+print(len(problem))
 
 for gen in range(10000):
     rankedSent=[]
