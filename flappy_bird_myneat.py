@@ -27,7 +27,11 @@ birds=[]
 savedBirds=[]
 
 mutation_rate=0.1
-crossover_rate=0.1
+crossover_rate=0.95
+
+pipe_image=pygame.image.load("./sprites/pipe.png")
+bg = pygame.image.load("./sprites/space.jpg")
+bg=pygame.transform.scale(bg,(WIDTH,HEIGHT))
 
 class Bird:
     def __init__(self):
@@ -41,7 +45,7 @@ class Bird:
         self.alive=True
         self.betweenPipes=False
         self.height = self.y
-        self.brain=brain.Brain(5,4,1)
+        self.brain=brain.Brain(7,4,1)
         self.tick_count=0
     def drawBird(self):
         #global flap
@@ -118,9 +122,11 @@ class Pipe:
         self.x=WIDTH-100
         self.y=y
         self.height=height
-        self.width=40
-    def draw(self):
-        pygame.draw.rect(win, (255,255,255), pygame.Rect(self.x, self.y, self.width, self.height))
+        self.width=50
+        self.image=pipe_image
+    def draw(self,win):
+        win.blit(drawPipe(self.image,self.width,self.height),(self.x, self.y))
+        #pygame.draw.rect(win, (255,255,255), pygame.Rect(self.x, self.y, self.width, self.height))
     def move(self):
         self.x-=pipe_velocity
         if self.x <= 0:
@@ -128,7 +134,7 @@ class Pipe:
 
 for b in range(300):
     birds.append(Bird())
-
+    
 def addPipes():
     if len(pipes) > 0:
         first_pipe_height=pipes[0].height
@@ -137,6 +143,11 @@ def addPipes():
         pipes.append(Pipe(HEIGHT-pipe_height,pipe_height))
     else:
         pipes.append(Pipe(0,random.randint(100,400)))
+
+def drawPipe(image,width,height):
+    p=pygame.transform.scale(image,(abs(width),abs(height)))
+    return p
+
 
 def mutation(rate,chromosome):
     new_chromosome=chromosome.copy()
@@ -194,14 +205,14 @@ def neuroEvolution():
     new_parent2_wout=np.array(crossed_wout[1]).reshape(parents[0].wout.shape)
 
     #make new networks from the new parents with new weights and biasis
-    parent1=brain.Brain(5,4,1)
+    parent1=brain.Brain(7,4,1)
     parent1.wh=new_parent1_wh
     parent1.wout=new_parent1_wout
     parent1.bh=np.array(mutation(mutation_rate,parents[0].bh.flatten().tolist())).reshape(savedBirds[0].brain.bh.shape)
 
     parent1.bout=np.array(mutation(mutation_rate,parents[0].bout.flatten().tolist())).reshape(savedBirds[0].brain.bout.shape)
 
-    parent2=brain.Brain(5,4,1)
+    parent2=brain.Brain(7,4,1)
     parent2.wh=new_parent2_wh
     parent2.wout=new_parent2_wout
     parent2.bh=np.array(mutation(mutation_rate,parents[1].bh.flatten().tolist())).reshape(savedBirds[0].brain.bh.shape)
@@ -212,14 +223,14 @@ def neuroEvolution():
 
     for p in range(300):
         if p < 150:
-            new_brain=brain.Brain(4,4,1)
+            new_brain=brain.Brain(7,4,1)
             new_brain.wh=np.array(mutation(mutation_rate,parent1.wh.flatten().tolist())).reshape(savedBirds[0].brain.wh.shape)
             new_brain.wout=np.array(mutation(mutation_rate,parent1.wout.flatten().tolist())).reshape(savedBirds[0].brain.wout.shape)
             new_bird=Bird()
             new_bird.brain=new_brain
             newGen.append(new_bird)
         else:
-            new_brain=brain.Brain(4,4,1)
+            new_brain=brain.Brain(7,4,1)
             new_brain.wh=np.array(mutation(mutation_rate,parent2.wh.flatten().tolist())).reshape(savedBirds[0].brain.wh.shape)
             new_brain.wout=np.array(mutation(mutation_rate,parent2.wout.flatten().tolist())).reshape(savedBirds[0].brain.wout.shape)
             new_bird=Bird()
@@ -243,13 +254,16 @@ while True:
             if event.key == pygame.K_SPACE:
                 bird.jump()
     win.fill((0,0,0))
+    win.blit(bg,(0,0))
     for idx,bird in enumerate(birds):
         if bird.alive:
             bird.drawBird()
             bird.collition()
             bird.move()
             bird.fitness+=3
-            brain_input=[bird.velocity,bird.y/HEIGHT,pipes[0].height+pipe_gap/2,pipes[0].x,pipes[0].x-50]
+            # brain_input=[bird.velocity,bird.y/HEIGHT,pipes[0].height+pipe_gap/2,pipes[0].x,pipes[0].x-50]
+            #brain_input=[bird.velocity,bird.y/HEIGHT,pipes[0].height+(HEIGHT-pipes[0].height),pipes[0].x,pipes[0].x]
+            brain_input=[bird.x+bird.size/2,bird.y-bird.size/2,HEIGHT-bird.y,pipes[0].height,pipes[0].height+pipe_gap,pipes[0].x,bird.velocity,]
             brain_output=bird.brain.feedFoward(brain_input)
             if  brain_output[0] > 0.5:
                 bird.jump()
@@ -264,7 +278,7 @@ while True:
                 neuroEvolution()
 
     for pipe in pipes:
-        pipe.draw()
+        pipe.draw(win)
         pipe.move()
 
     pygame.display.flip()
