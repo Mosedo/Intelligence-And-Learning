@@ -53,7 +53,7 @@ for gen in range(10000):
 
     pool=rankedGenomes[:100]
 
-    if rankedGenomes[0][0] > 8:
+    if rankedGenomes[0][0] > 14:
         print(f"Solution for [1,0] {rankedGenomes[0][1].feedFoward([1,0])}")
         print(f"Solution for [0,1] {rankedGenomes[0][1].feedFoward([0,1])}")
         print(f"Solution for [1,1] {rankedGenomes[0][1].feedFoward([1,1])}")

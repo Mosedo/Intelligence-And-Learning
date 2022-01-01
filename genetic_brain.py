@@ -31,7 +31,8 @@ class Brain:
     def feedFoward(self,inputs):
         hidden_layer_input1=np.dot(np.array([[inputs]]),self.wh)
         hidden_layer_input=hidden_layer_input1 + self.bh
-        hiddenlayer_activations = self.sigmoid(hidden_layer_input)
+        # hiddenlayer_activations = self.sigmoid(hidden_layer_input)
+        hiddenlayer_activations = np.tanh(hidden_layer_input)
         output_layer_input1=np.dot(hiddenlayer_activations,self.wout)
         output_layer_input= output_layer_input1+ self.bout
 

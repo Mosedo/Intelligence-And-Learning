@@ -58,7 +58,8 @@ class Bird:
         win.blit(self.image,(self.x,self.y))
         self.insidePipes()
 
-        if self.x-self.size > pipes[0].x+pipes[0].width/2:
+        if self.x-self.size/2 > pipes[0].x+pipes[0].width/2:
+            print("Rewared")
             self.fitness+=10
         
         if self.betweenPipes:
@@ -205,9 +206,9 @@ def eval_genomes(genomes, config):
                         bird.jump()
                 
                 if bird.betweenPipes:
-                    ge[idx].fitness += 5
-                if bird.x-bird.size > pipes[0].x+pipes[0].width/2:
-                    ge[idx].fitness += 10
+                    ge[idx].fitness += 9
+                if bird.x-bird.size/2 > pipes[0].x+pipes[0].width/2:
+                    ge[idx].fitness += 9
                     bird.score+=1
                 
             else:
