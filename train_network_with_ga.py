@@ -7,6 +7,7 @@ import genetic_brain as brain
 
 population_size=1000
 mutation_rate=0.1
+crossover_rate=0.1
 
 inputs=[[1,0],[1,1],[0,1],[0,0]]
 outputs=[[1],[0],[1],[0]]
@@ -37,12 +38,23 @@ def mutation(rate,chromosome):
     return new_chromosome
 
 def crossover(p1, p2, r_cross):
-    c1, c2 = p1.copy(), p2.copy()
-    if rand() < r_cross:
-        pt = randint(1, len(p1)-2)
-        c1 = p1[:pt] + p2[pt:]
-        c2 = p2[:pt] + p1[pt:]
-    return [c1, c2]
+    # c1, c2 = p1.copy(), p2.copy()
+    # if rand() < r_cross:
+    #     pt = randint(1, len(p1)-2)
+    #     c1 = p1[:pt] + p2[pt:]
+    #     c2 = p2[:pt] + p1[pt:]
+    # return [c1, c2]
+
+    for c in range(2):
+        if random.uniform(0,1) > crossover_rate:
+            c1, c2 = p1.copy(), p2.copy()
+            if rand() < r_cross:
+                pt = randint(1, len(p1)-2)
+                c1 = p1[:pt] + p2[pt:]
+                c2 = p2[:pt] + p1[pt:]
+            return [c1, c2]
+        else:
+            return [p1,p2]
 
 for gen in range(10000):
     rankedGenomes=[]
@@ -53,7 +65,7 @@ for gen in range(10000):
 
     pool=rankedGenomes[:100]
 
-    if rankedGenomes[0][0] > 14:
+    if rankedGenomes[0][0] > 20:
         print(f"Solution for [1,0] {rankedGenomes[0][1].feedFoward([1,0])}")
         print(f"Solution for [0,1] {rankedGenomes[0][1].feedFoward([0,1])}")
         print(f"Solution for [1,1] {rankedGenomes[0][1].feedFoward([1,1])}")
