@@ -10,7 +10,7 @@ population_size=1000
 # crossover_rate=0.95
 
 mutation_rate=0.1
-crossover_rate=0.99
+crossover_rate=0.5
 
 inputs=[[1,0],[1,1],[0,1],[0,0]]
 outputs=[[1],[0],[1],[0]]
