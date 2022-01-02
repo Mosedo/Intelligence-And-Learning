@@ -75,7 +75,8 @@ for gen in range(10000):
         print(f"Solution for [0,0] {rankedGenomes[0][1].feedFoward([0,0])}")
         break
 
-    parents=[pool[0][1],pool[random.randint(1,len(pool)-1)][1]]
+    # parents=[pool[0][1],pool[random.randint(1,len(pool)-1)][1]]
+    parents=[pool[0][1],pool[1][1]]
 
     parent1_wh=parents[0].wh.flatten().tolist()
     parent1_wout=parents[0].wout.flatten().tolist()
