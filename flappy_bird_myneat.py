@@ -14,8 +14,8 @@ HEIGHT=600
 
 accelerate_by=0.001
 jumping=False
-pipe_gap=150
-pipe_velocity=40
+pipe_gap=170
+pipe_velocity=20
 pipes=[]
 win=pygame.display.set_mode((WIDTH,HEIGHT))
 
@@ -26,12 +26,22 @@ FTS=30
 birds=[]
 savedBirds=[]
 
-mutation_rate=0.1
-crossover_rate=0.95
+mutation_rate=0.01
+crossover_rate=0.99
+
+generation=0
 
 pipe_image=pygame.image.load("./sprites/pipe.png")
 bg = pygame.image.load("./sprites/space.jpg")
 bg=pygame.transform.scale(bg,(WIDTH,HEIGHT))
+
+
+pygame.font.init()
+font = pygame.font.SysFont(None,25)
+
+def write(msg):
+    screen_text = font.render(msg, True, (255, 255, 255))
+    win.blit(screen_text,(10,10))
 
 class Bird:
     def __init__(self):
@@ -142,7 +152,7 @@ def addPipes():
         pipe_height=remaining_space-pipe_gap
         pipes.append(Pipe(HEIGHT-pipe_height,pipe_height))
     else:
-        pipes.append(Pipe(0,random.randint(100,400)))
+        pipes.append(Pipe(0,random.randint(100,HEIGHT/2)))
 
 def drawPipe(image,width,height):
     p=pygame.transform.scale(image,(abs(width),abs(height)))
@@ -179,6 +189,7 @@ def crossover(p1, p2, r_cross):
 def neuroEvolution():
     global birds
     global savedBirds
+    global generation
     rankedBirds=[]
     for savedbird in savedBirds:
         rankedBirds.append((savedbird.fitness,savedbird.brain))
@@ -186,7 +197,8 @@ def neuroEvolution():
     rankedBirds.sort(key=sort_by,reverse=True)
     pool=rankedBirds[:10]
 
-    parents=[pool[0][1],pool[random.randint(1,len(pool)-1)][1]]
+    #parents=[pool[0][1],pool[random.randint(1,len(pool)-1)][1]]
+    parents=[pool[0][1],pool[1][1]]
 
 
     parent1_wh=parents[0].wh.flatten().tolist()
@@ -239,6 +251,7 @@ def neuroEvolution():
         
     birds=newGen
     savedBirds.clear()
+    generation+=1
     
 
 clock = pygame.time.Clock()
@@ -255,6 +268,7 @@ while True:
                 bird.jump()
     win.fill((0,0,0))
     win.blit(bg,(0,0))
+    write("Generation "+str(generation))
     for idx,bird in enumerate(birds):
         if bird.alive:
             bird.drawBird()
