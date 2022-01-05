@@ -14,7 +14,7 @@ HEIGHT=600
 
 accelerate_by=0.001
 jumping=False
-pipe_gap=170
+pipe_gap=180
 pipe_velocity=20
 pipes=[]
 win=pygame.display.set_mode((WIDTH,HEIGHT))
@@ -142,7 +142,7 @@ class Pipe:
         if self.x <= 0:
             pipes.clear()
 
-for b in range(300):
+for b in range(400):
     birds.append(Bird())
     
 def addPipes():
@@ -233,8 +233,8 @@ def neuroEvolution():
     #create new population
     newGen=[]
 
-    for p in range(300):
-        if p < 150:
+    for p in range(400):
+        if p < 200:
             new_brain=brain.Brain(7,4,1)
             new_brain.wh=np.array(mutation(mutation_rate,parent1.wh.flatten().tolist())).reshape(savedBirds[0].brain.wh.shape)
             new_brain.wout=np.array(mutation(mutation_rate,parent1.wout.flatten().tolist())).reshape(savedBirds[0].brain.wout.shape)

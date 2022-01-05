@@ -8,7 +8,7 @@ from numpy.random import rand
 population_size=1000
 mutation_rate=0.01
 
-problem="My name is Ibrahim Its a holiday."
+problem="My name is Ibrahim Its a holiday. I am a bit tired today?"
 
 problem=convertToList(problem)
 
