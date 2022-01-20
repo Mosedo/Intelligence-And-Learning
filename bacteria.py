@@ -26,14 +26,23 @@ DARKGRAY = (40, 40, 40)
 
 # Mob properties
 MOB_SIZE = 32
-MAX_SPEED = 2
+MAX_SPEED = 4
 MAX_FORCE = 0.1
 APPROACH_RADIUS = 120
+
+population_size=4
 
 
 pygame.init()
 
 win=pygame.display.set_mode((WIDTH,HEIGHT))
+
+pygame.font.init()
+font = pygame.font.SysFont(None,25)
+
+def write(msg,x,y):
+    screen_text = font.render(msg, True, (255, 255, 255))
+    win.blit(screen_text,(x,y))
 
 generation=0
 
@@ -78,8 +87,9 @@ class Agent:
         self.fitness=0
         self.targets=[]
         self.random_locations=[vec(random.randint(self.agent_width,WIDTH),random.randint(self.agent_height,HEIGHT))]
-        self.brain=brain.Brain(5,5,1)
+        self.brain=brain.Brain(3,4,1)
         self.removed=False
+        self.distance=[]
     
     def rotated(self,surface,angle):
         rotated_surface=pygame.transform.rotozoom(surface,angle,1)
@@ -98,8 +108,7 @@ class Agent:
 
         #self.surface.fill((29, 31, 30))
 
-        self.life-=0.02
-        self.fitness+=0.01
+        self.life-=0.05
         
         pygame.draw.polygon(surface=self.surface, color=self.color, points=[(self.surface.get_rect().bottomleft[0],self.surface.get_rect().bottomleft[1]), (self.surface.get_rect().topright[0]-self.agent_width/2,0), (self.surface.get_rect().bottomright[0],self.surface.get_rect().bottomright[1])])
         rotated_surface,rotated_rect=self.rotated(self.surface,self.angle)
@@ -124,6 +133,7 @@ class Agent:
             self.removed=True
     
     def move(self):
+        #print(self.life)
         if len(self.targets) > 0:
 
             if self.targets[0].code < 0.5:
@@ -131,7 +141,23 @@ class Agent:
             else:
                 self.radar_color=(0,255,0)
 
-            self.seek(self.targets[0].position)
+            #self.seek(self.targets[0].position)
+
+            #start here
+            prediction=self.brain.feedFoward([self.distance[0],self.targets[0].code,self.life/100])
+
+
+            if prediction[0] >= 0.5:
+
+                self.seek(self.targets[0].position)
+
+                
+            else:
+                self.targets.append(foods[random.randint(0,len(foods)-1)])
+                self.targets.pop(0)
+                
+
+            #end here
 
  
         elif len(self.targets) < 1:
@@ -143,58 +169,25 @@ class Agent:
         if len(self.targets) > 0:
             distance=math.sqrt((self.targets[0].position.x - self.position.x)**2+(self.targets[0].position.y - self.position.y)**2)
             if distance <= self.agent_width/2:
+
+                if self.targets[0].code >= 0.5:
+                    #self.fitness+=500
+                    self.fitness+=(1/self.distance[0])
+                    if self.life < 100:
+                        self.life+=40
+                else:
+                    self.life-=1000
+                    self.fitness-=10
+                    #self.fitness-=300
+
+
                 if len(self.targets) > 1:
                     
                     srl=self.targets[0].serial_number
-
-                    #start here
-                    prediction=self.brain.feedFoward([self.position.x/WIDTH,self.position.y/HEIGHT,self.targets[0].position.x/WIDTH,self.targets[0].position.y/HEIGHT,self.targets[0].code])
-        
-                    if prediction[0] >= 0.5:
-
-                        if prediction[0] >= 0.5 and self.targets[0].code < 0.5:
-
-                            self.targets.pop(0)
-                            for idx,food in enumerate(foods):
-                                if food.serial_number==srl:
-                                    foods.pop(idx)
-
-                            self.fitness-=200
-                            if self.life > 0:
-                                self.life-=50
-                        elif prediction[0] >= 0.5 and self.targets[0].code >= 0.5:
-                            self.targets.pop(0)
-                            for idx,food in enumerate(foods):
-                                if food.serial_number==srl:
-                                    foods.pop(idx)
-
-                            self.fitness+=500
-                            if self.life < 100:
-                                self.life+=20
-
-                    else:
-                        #self.targets.pop(0)
-
-
-                        if prediction[0] < 0.5 and self.targets[0].code >= 0.5:
-    
-                            self.targets.pop(0)
-                            self.fitness-=200
-
-                        elif prediction[0] < 0.5 and self.targets[0].code < 0.5:
-                            self.targets.pop(0)
-                            self.fitness+=500
-
-
-                    #end here
-
-                    
-
-                    # self.targets.pop(0)
-
-                    # for idx,food in enumerate(foods):
-                    #     if food.serial_number==srl:
-                    #         foods.pop(idx)
+                    self.targets.pop(0)
+                    for idx,food in enumerate(foods):
+                        if food.serial_number==srl:
+                            foods.pop(idx)
 
                 elif len(self.targets) == 1:
                     srl=self.targets[0].serial_number
@@ -210,15 +203,19 @@ class Agent:
                 self.random_locations[0]=vec(random.randint(10,WIDTH),random.randint(10,HEIGHT))
     
     def findTargetFoods(self):
-        if len(foods) > 0:
-            for food in foods:
-                if ((food.position.x >= self.position.x and food.position.x <= self.position.x+self.search_radius) or (food.position.x <= self.position.x and food.position.x >= self.position.x-self.search_radius)) and ((food.position.y >= self.position.y and food.position.y <= self.position.y+self.search_radius) or (food.position.y <= self.position.y and food.position.y >= self.position.y-self.search_radius)):
-                    f_list=[]
-                    for f in self.targets:
-                        if f.serial_number== food.serial_number:
-                            f_list.append(food)
-                    if len(f_list) ==0:
-                        self.targets.append(food)
+        if len(self.targets) < 1:
+            self.targets.append(foods[random.randint(0,len(foods)-1)])
+            distance=math.sqrt((self.targets[0].position.x - self.position.x)**2+(self.targets[0].position.y - self.position.y)**2)
+            self.distance.append(distance)
+        #if len(foods) > 0:
+            #for food in foods:
+                # if ((food.position.x >= self.position.x and food.position.x <= self.position.x+self.search_radius) or (food.position.x <= self.position.x and food.position.x >= self.position.x-self.search_radius)) and ((food.position.y >= self.position.y and food.position.y <= self.position.y+self.search_radius) or (food.position.y <= self.position.y and food.position.y >= self.position.y-self.search_radius)):
+                #     f_list=[]
+                #     for f in self.targets:
+                #         if f.serial_number== food.serial_number:
+                #             f_list.append(food)
+                #     if len(f_list) ==0:
+                #         self.targets.append(food)
     def removeEaten(self):
         for idx,target in enumerate(self.targets):
             still_available=[]
@@ -345,7 +342,7 @@ def neuroEvolution():
         rankedAgents.append((savedagent.fitness,savedagent.brain))
     sort_by=lambda ranked:ranked[0]
     rankedAgents.sort(key=sort_by,reverse=True)
-    pool=rankedAgents[:6]
+    pool=rankedAgents[:50]
 
     #parents=[pool[0][1],pool[random.randint(1,len(pool)-1)][1]]
     parents=[pool[0][1],pool[1][1]]
@@ -367,14 +364,14 @@ def neuroEvolution():
     new_parent2_wout=np.array(crossed_wout[1]).reshape(parents[0].wout.shape)
 
     #make new networks from the new parents with new weights and biasis
-    parent1=brain.Brain(7,4,1)
+    parent1=brain.Brain(3,4,1)
     parent1.wh=new_parent1_wh
     parent1.wout=new_parent1_wout
     parent1.bh=np.array(mutation(mutation_rate,parents[0].bh.flatten().tolist())).reshape(savedAgents[0].brain.bh.shape)
 
     parent1.bout=np.array(mutation(mutation_rate,parents[0].bout.flatten().tolist())).reshape(savedAgents[0].brain.bout.shape)
 
-    parent2=brain.Brain(7,4,1)
+    parent2=brain.Brain(3,4,1)
     parent2.wh=new_parent2_wh
     parent2.wout=new_parent2_wout
     parent2.bh=np.array(mutation(mutation_rate,parents[1].bh.flatten().tolist())).reshape(savedAgents[0].brain.bh.shape)
@@ -383,16 +380,16 @@ def neuroEvolution():
     #create new population
     newGen=[]
 
-    for p in range(10):
-        if p < 5:
-            new_brain=brain.Brain(5,5,1)
+    for p in range(population_size):
+        if p < population_size/2:
+            new_brain=brain.Brain(3,4,1)
             new_brain.wh=np.array(mutation(mutation_rate,parent1.wh.flatten().tolist())).reshape(savedAgents[0].brain.wh.shape)
             new_brain.wout=np.array(mutation(mutation_rate,parent1.wout.flatten().tolist())).reshape(savedAgents[0].brain.wout.shape)
             new_agent=Agent()
             new_agent.brain=new_brain
             newGen.append(new_agent)
         else:
-            new_brain=brain.Brain(5,5,1)
+            new_brain=brain.Brain(3,4,1)
             new_brain.wh=np.array(mutation(mutation_rate,parent2.wh.flatten().tolist())).reshape(savedAgents[0].brain.wh.shape)
             new_brain.wout=np.array(mutation(mutation_rate,parent2.wout.flatten().tolist())).reshape(savedAgents[0].brain.wout.shape)
             new_agent=Agent()
@@ -404,21 +401,24 @@ def neuroEvolution():
     generation+=1
 
 
-for f in range(50):
-    if f <=25:
+for f in range(150):
+    if f <=85:
         food_count+=1
         foods.append(Food())
     else:
         poison_count+=1
         foods.append(Poison())
 
-for a in range(10):
+for a in range(population_size):
     agents.append(Agent())
 
+FPS=240
 
-
+clock = pygame.time.Clock()
 
 while True:
+
+    clock.tick(FPS)
 
     if np.random.randint(0,1) > 0.95:
         foods.append(Food())

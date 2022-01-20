@@ -19,6 +19,7 @@ WIDTH=100
 inputs=[]
 outputs=[]
 cycle=20
+batch_size=50
 
 for i in range(100):
     c=random.randint(0,WIDTH)
@@ -48,14 +49,30 @@ best_brain=brain.Brain(1,5,1)
 for p in range(population_size):
     population.append(brain.Brain(1,5,1))
 
+
 def fitnessFunction(genome):
+    global batch_counter
     errors=[]
     new_inputs=[]
     new_outputs=[]
-    for i in range(50):
-        idx=random.randint(0,len(inputs)-1)
-        new_inputs.append(inputs[idx])
-        new_outputs.append(outputs[idx])
+    
+    while True:
+
+        if len(new_inputs) == batch_size:
+            break
+        else:
+            if len(new_inputs) < 1:
+                idx=random.randint(0,len(inputs)-1)
+                new_inputs.append(inputs[idx])
+                new_outputs.append(outputs[idx])
+            else:
+                idx=random.randint(0,len(inputs)-1)
+                if new_outputs[-1] != outputs[idx] and new_inputs[-1] != inputs[idx]:
+                    new_inputs.append(inputs[idx])
+                    new_outputs.append(outputs[idx])
+
+
+            
 
     for index,input in enumerate(new_inputs):
         guess=genome.feedFoward(input)[0]
@@ -72,7 +89,8 @@ def mutation(rate,chromosome):
     new_chromosome=chromosome.copy()
     for idx,letter in enumerate(chromosome):
         if np.random.uniform(0,1) < rate:
-            new_chromosome[idx]=random.uniform(-7,1)
+            #new_chromosome[idx]=random.uniform(-7,1)
+            new_chromosome[idx]*=random.uniform(-7,1)
     return new_chromosome
 
 def crossover(p1, p2, r_cross):
@@ -104,10 +122,6 @@ for gen in range(10000):
     pool=rankedGenomes[:100]
 
     if rankedGenomes[0][0] > 20 and gen > 250:
-        # print(f"Solution for [0.9] {rankedGenomes[0][1].feedFoward([0.9])}")
-        # print(f"Solution for [0.6] {rankedGenomes[0][1].feedFoward([0.6])}")
-        # print(f"Solution for [0.2] {rankedGenomes[0][1].feedFoward([0.2])}")
-        # print(f"Solution for [0.4] {rankedGenomes[0][1].feedFoward([0.4])}")
         best_brain=rankedGenomes[0][1]
         break
 
