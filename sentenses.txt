@@ -1,0 +1,209 @@
+Machine learning (ML) refers to a system's ability to acquire, 
+and integrate knowledge through large-scale observations, 
+and to improve, and extend itself by learning new knowledge 
+rather than by being programmed with that knowledge. 
+ML techniques are used in intelligent tutors to acquire
+ new knowledge about students, 
+identify their skills, 
+and learn new teaching approaches. 
+They improve teaching by repeatedly observing how students 
+react and generalize rules about the domain or student. 
+The role of ML techniques in a tutor is to 
+independently observe and evaluate the tutor's actions. 
+ML tutors customize their teaching by reasoning 
+about large groups of students, 
+and tutor-student interactions, 
+generated through several components. 
+A performance element is responsible for 
+making improvements in the tutor, 
+using perceptions of tutor/student interactions, 
+and knowledge about the student's reaction to 
+decide how to modify the tutor to perform better in the future. 
+ML techniques are used to identify student learning strategies, 
+such as, which activities do students select most frequently and in which order. 
+Analysis of student behavior leads to greater student learning outcome 
+by providing tutors with useful diagnostic information for generating feedback
+The field of machine learning is introduced at a conceptual level. 
+Ideas such as supervised and unsupervised as well as regression
+and classification are explained. The tradeoff between bias, 
+variance, and model complexity is discussed as a central guiding idea of learning. 
+Various types of model that machine learning 
+can produce are introduced such as the neural network (feed-forward and recurrent), 
+support vector machine, random forest, self-organizing map, 
+and Bayesian network. Training a model is 
+discussed next with its main ideas of splitting a dataset into training, 
+testing, and validation sets as well as performing cross-validation. 
+Assessing the goodness of the model is treated 
+next alongside the essential role of the domain expert in keeping the project real. 
+The chapter concludes with some practical advice on how to perform a machine learning project
+What is Machine Learning
+Machine learning is a field of study that looks at using 
+computational algorithms to turn empirical data into usable models. 
+The machine learning field grew out of traditional statistics and artificial intelligences communities. 
+From the efforts of mega corporations such as Google, Microsoft, Facebook, Amazon, and so on, 
+machine learning has become one of the hottest computational science topics in the last decade. 
+Through their business processes immense amounts of data have been and will be collected. 
+This has provided an opportunity to re-invigorate the statistical and computational approaches to autogenerate useful models from data.
+Machine learning algorithms can be used to (a) gather understanding 
+of the cyber phenomenon that produced the data under study, 
+(b) abstract the understanding of underlying phenomena in the form of a model, 
+(c) predict future values of a phenomena using the above-generated model, 
+and (d) detect anomalous behavior exhibited by a phenomenon under observation. 
+There are several open-source implementations of machine learning algorithms that 
+can be used with either application programming interface (API) 
+calls or nonprogrammatic applications. Examples of such implementations include Weka,
+1 Orange,2 and RapidMiner.3 The results of such algorithms can be fed to visual analytic tools such as Tableau4 and Spotfire5 to produce 
+dashboards and actionable pipelines.
+Cyber space and its underlying dynamics can be conceptualized as a manifestation of human 
+actions in an abstract and high-dimensional space. In order to begin solving some of the security 
+challenges within cyber space, one needs to sense various aspects of cyber space and collect data.
+6 The observational data obtained is usually large and increasingly streaming in nature. Examples of cyber data include error logs, 
+firewall logs, and network flow
+Machine learning is a multidisciplinary field
+Machine learning is generally considered to be a subfield of artificial intelligence, 
+and even a subfield of computer science in some perspectives. Machine learning contains ideas that have been inherited 
+over a period of time and adapted from several disciplines, rendering it a real multidisciplinary and interdisciplinary field. 
+A crucial point to remember is that this is not a comprehensive list of fields or domains but rather a reflection of the key 
+machine learning subject areas. The major fields or domains related to machine learning include the following:
+computer science
+mathematics
+statistics
+artificial intelligence
+data mining
+deep learning
+data science
+natural language processing
+Data science is an extensive interdisciplinary field spanning all the other fields that are subfields within it. 
+The idea behind data science is using methodologies, algorithms, and techniques to extract information from data and domain knowledge. 
+Concepts of data mining and pattern recognition techniques, such as knowledge discovery of databases (KDD), 
+developed after relational databases became prominent. These fields concentrate more on the capability and method of extracting information 
+from big datasets. Machine learning derives concepts, which are more related 
+to the analysis phase. Artificial intelligence (AI) is a superset involving 
+machine learning as one of its focused areas. The fundamental concept of AI is to develop an intelligence as 
+revealed by machines based on their awareness of their environment and input parameters/attributes and their response to performing 
+anticipated tasks based on expectations. Machine learning generally deals with algorithms and techniques that can be utilized to recognize data, 
+construct representations, and accomplish tasks such as predictions. 
+Another major subfield of AI associated with machine learning is natural language processing (NLP), 
+which derives mainly from computer science and computational linguistics. Currently, text analytics is a prominent area among data scientists for 
+processing, extracting, and understanding natural human language. 
+Deep learning is a subfield of machine learning that deals with methods associated with representative learning to improve data by 
+gaining experience. It employs a hierarchical and layered structure to represent the given input attributes and its current surroundings, 
+utilizing a nested, layered hierarchy of concept representations. Hence machine learning can be utilized to solve real-world problems. 
+This provides us with a decent overview of the broad landscape of the multidisciplinary field of machine learning
+Machine learning is a method of data analysis that automates analytical model building. 
+It is a branch of artificial intelligence based on the idea that systems can learn from data, 
+identify patterns and make decisions with minimal human intervention
+While COVID-19 is dominating headlines across the world, 
+it’s important to note that in the world of machine learning, 
+many companies are operating business as usual. 
+Of course almost everyone by now has taken some measures to fight the spread of the Coronavirus. 
+However, many researchers are working hard to keep up progress and innovation in the world of AI
+Google today announced the beta launch of Cloud AI Platform Pipelines, 
+a service designed to deploy robust, 
+repeatable AI pipelines along with monitoring, 
+auditing, version tracking, 
+and reproducibility in the cloud. Google’s pitching it as a way to deliver an “easy to install”
+secure execution environment for machine learning workflows, 
+which could reduce the amount of time enterprises spend bringing products to production
+When you’re just prototyping a machine learning model in a notebook, 
+it can seem fairly straightforward. 
+But when you need to start paying attention to the other pieces required to make 
+a [machine learning] workflow sustainable and scalable, things become more complex,” 
+wrote Google product manager Anusha Ramesh and staff developer advocate Amy Unruh in a blog post
+learning workflow can involve many steps with dependencies on each other, 
+from data preparation and analysis, 
+to training, to evaluation, to deployment, 
+and more. It’s hard to compose and track these processes in an ad-hoc manner — 
+for example, in a set of notebooks or scripts — and things like auditing and 
+reproducibility become increasingly problematic.
+AI Platform Pipelines has two major parts: 
+(1) the infrastructure for deploying and running structured 
+AI workflows that are integrated with Google Cloud Platform services and 
+(2) the pipeline tools for building, debugging, and sharing pipelines and components. 
+The service runs on a Google Kubernetes cluster that’s automatically created as a part of the installation process, and it’s 
+accessible via the Cloud AI Platform dashboard. 
+With AI Platform Pipelines, 
+developers specify a pipeline using the Kubeflow Pipelines software development kit (SDK), 
+or by customizing the TensorFlow Extended (TFX) 
+Pipeline template with the TFX SDK. 
+This SDK compiles the pipeline and submits it to the Pipelines REST API server, 
+which stores and schedules the pipeline for execution
+AI Pipelines uses the open source Argo workflow engine to run the pipeline and has additional 
+microservices to record metadata, handle components IO, 
+and schedule pipeline runs. 
+Pipeline steps are executed as individual isolated pods in a 
+cluster and each component can leverage Google Cloud services such as Dataflow, 
+AI Platform Training and Prediction, BigQuery, and others. Meanwhile, 
+the pipelines can contain steps that perform graphics card and tensor processing 
+unit computation in the cluster, directly leveraging features 
+like autoscaling and node auto-provisioning
+AI Platform Pipeline runs include automatic metadata tracking using ML Metadata, 
+a library for recording and retrieving metadata associated 
+with machine learning developer and data scientist workflows. 
+Automatic metadata tracking logs the artifacts used in each pipeline step, 
+pipeline parameters, and the linkage across the input/output artifacts, 
+as well as the pipeline steps that created and consumed them
+In addition, AI Platform Pipelines supports pipeline versioning, 
+which allows developers to upload multiple versions
+ of the same pipeline and group them in the UI, 
+ as well as automatic artifact and lineage tracking. 
+ Native artifact tracking enables the tracking of things like models, data statistics, 
+ model evaluation metrics, and many more. 
+ And lineage tracking shows the history and versions of your models, 
+ data, and more
+ Google says that in the near future, 
+ AI Platform Pipelines will gain multi-user isolation, 
+ which will let each person accessing the Pipelines cluster control
+who can access their pipelines and other resources. Other forthcoming features 
+include workload identity to support transparent access to Google Cloud Services; 
+a UI-based setup of off-cluster storage of backend data, including metadata, 
+server data, job history, and metrics; simpler cluster upgrades; 
+and more templates for authoring workflows
+Machine learning (ML) is the study of computer algorithms that can
+improve automatically through experience and by the use of data.
+It is seen as a part of artificial intelligence. Machine learning algorithms build a model based on sample data, 
+known as training data, in order to make predictions or decisions without being explicitly programmed to do so.
+Machine learning algorithms are used in a wide variety of applications, 
+such as in medicine, email filtering, speech recognition, 
+and computer vision, where it is difficult or unfeasible 
+to develop conventional algorithms to perform the needed tasks
+A subset of machine learning is closely related to computational statistics, 
+which focuses on making predictions using computers; 
+but not all machine learning is statistical learning. 
+The study of mathematical optimization delivers methods, 
+theory and application domains to the field of machine learning. 
+Data mining is a related field of study, 
+focusing on exploratory data analysis through unsupervised learning.
+Some implementations of machine learning use data and neural networks in a way that mimics the working of a biological brain.
+In its application across business problems, 
+machine learning is also referred to as predictive analytics. 
+Learning algorithms work on the basis that strategies, 
+algorithms, and inferences that worked well in the past are likely to continue working well in the future.
+These inferences can be obvious, such as "since the sun rose every morning for the last 10,000 days, 
+it will probably rise tomorrow morning as well". 
+They can be nuanced, such as "X% of families have geographically separate species with color variants, 
+so there is a Y% chance that undiscovered black swans exist"
+Machine learning programs can perform tasks without being explicitly programmed to do so. 
+It involves computers learning from data provided so that they carry out certain tasks. 
+For simple tasks assigned to computers, 
+it is possible to program algorithms telling the machine how to execute all steps required 
+to solve the problem at hand; on the computer's part, no learning is needed. For more advanced tasks, 
+it can be challenging for a human to manually create the needed algorithms. In practice, 
+it can turn out to be more effective to help the machine develop its own algorithm, 
+rather than having human programmers specify every needed step
+The discipline of machine learning employs various approaches to teach computers to accomplish tasks where no fully satisfactory algorithm 
+is available. In cases where vast numbers of potential answers exist, 
+one approach is to label some of the correct answers as valid. 
+This can then be used as training data for the computer to improve the algorithm(s) 
+it uses to determine correct answers. For example, 
+to train a system for the task of digital character recognition, 
+the MNIST dataset of handwritten digits has often been used
+The term machine learning was coined in 1959 by Arthur Samuel, 
+an American IBMer and pioneer in the field of computer gaming and artificial intelligence.
+Also the synonym self-teaching computers was used in this time period.
+A representative book of the machine learning research during the 1960s was the Nilsson's book on Learning Machines, 
+dealing mostly with machine learning for pattern classification.
+Interest related to pattern recognition continued into the 1970s, 
+as described by Duda and Hart in 1973.
+In 1981 a report was given on using teaching strategies so that a neural network learns to recognize 40 characters (26 letters, 
+10 digits, and 4 special symbols) from a computer terminal.

@@ -6,6 +6,7 @@ import math
 import random
 from keras.layers import Dense,Flatten
 from keras.activations import relu,softmax
+from keras.models import Sequential
 
 X=np.array(
     [
@@ -16,7 +17,6 @@ X=np.array(
     ]
 )
 
-print(X[0].shape)
 
 Y=np.array([
     [1,0],
@@ -26,22 +26,20 @@ Y=np.array([
 ])
 
 
-model=keras.Sequential()
+model=Sequential()
 model.add(Flatten(input_shape=(2,)))
-model.add(Dense(120,activation=relu))
+model.add(Dense(150,activation=relu))
 model.add(Dense(2,activation=softmax))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 model.fit(X,Y,epochs=150)
 
-for i in range(0,4):
-    print(model.predict(np.array([X[i]])))
+print(model.predict(X))
 
-# for prediction in model.predict(X):
-#     if prediction[0] >= 0.5:
-#         print(1)
-#     else:
-#         print(0)
+
+# for i in range(0,4):
+#     print(model.predict(np.array([X[i]])))
+
 
 # print(np.argmin(model.predict(X),axis=1))
 # print(model.predict(X[1]))
